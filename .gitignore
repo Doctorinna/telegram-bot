@@ -132,3 +132,4 @@ dmypy.json
 
 config.yml
 bot.log
+docker-compose.yml

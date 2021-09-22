@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  telegram-bot:
+    container_name: doctorinna-telegram-bot
+    build: .
+
+    environment:
+      DOCTORINNA_BOT_TOKEN: 0123456789:abcdefghijklmnopqrstuvwxyz012345678
+      DOCTORINNA_BOT_ADMIN: 123456789
+      DOCTORINNA_API_URL: https://doctorinna.com/api
+
+    depends_on:
+      - redis-server
+
+  redis-server:
+    container_name: doctorinna-redis-server
+    image: redis
+
+    volumes:
+      - redis-data:/var/lib/redis
+
+volumes:
+  redis-data:
