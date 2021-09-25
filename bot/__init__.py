@@ -1,3 +1,1 @@
-"""
-Package with Telegram bot as a part of Doctorinna project.
-"""
+"""Package with Telegram bot as a part of Doctorinna project"""
