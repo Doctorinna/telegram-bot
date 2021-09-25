@@ -15,9 +15,15 @@ def setup_args_parser() -> ArgumentParser:
         formatter_class=ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--bot-token', type=str, help='Telegram bot token (is received via @BotFather)')
-    parser.add_argument('--bot-admin', type=int, help='ID of bot admin')
-    parser.add_argument('--api-url', type=str, help='URL of questionnaire API')
+    bot_group = parser.add_argument_group('bot')
+    bot_group.add_argument('--bot-token', type=str, help='Telegram bot token (is received via @BotFather)')
+    bot_group.add_argument('--bot-admin', type=int, help='ID of bot admin')
+    bot_group.add_argument('--api-url', type=str, help='URL of questionnaire API')
+
+    redis_group = parser.add_argument_group('redis')
+    redis_group.add_argument('--redis-ip', type=str, default='localhost', help='IP of redis server')
+    redis_group.add_argument('--redis-port', type=int, default=6379, help='Port of redis server')
+    redis_group.add_argument('--redis-db', type=int, default=1, help='Redis database number')
 
     return parser
 

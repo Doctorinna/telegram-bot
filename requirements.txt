@@ -1,5 +1,6 @@
-aiogram==2.14.3
+aiogram==2.15
 aiohttp==3.7.4.post0
+aioredis==2.0.0
 async-timeout==3.0.1
 attrs==21.2.0
 Babel==2.9.1
