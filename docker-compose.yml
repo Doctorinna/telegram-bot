@@ -6,12 +6,9 @@ services:
     build: .
 
     environment:
-      DOCTORINNA_BOT_TOKEN: 0123456789:abcdefghijklmnopqrstuvwxyz012345678
-      DOCTORINNA_BOT_ADMIN: 123456789
-      DOCTORINNA_API_URL: https://doctorinna.com/api
-      DOCTORINNA_REDIS_IP: localhost
-      DOCTORINNA_REDIS_PORT: 6379
-      DOCTORINNA_REDIS_DB: 1
+      DOCTORINNA_BOT_TOKEN: ${DOCTORINNA_BOT_TOKEN}
+      DOCTORINNA_BOT_ADMIN: ${DOCTORINNA_BOT_ADMIN}
+      DOCTORINNA_API_URL: ${DOCTORINNA_API_URL}
 
     depends_on:
       - redis-server
@@ -19,9 +16,6 @@ services:
   redis-server:
     container_name: doctorinna-redis-server
     image: redis
-
-    ports:
-    - 6379:6379
 
     volumes:
       - redis-data:/var/lib/redis

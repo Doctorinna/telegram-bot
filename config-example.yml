@@ -1,6 +1,3 @@
 bot-token: 0123456789:abcdefghijklmnopqrstuvwxyz012345678
 bot-admin: 123456789
 api-url: https://doctorinna.com/api
-redis-ip: localhost
-redis-port: 6379
-redis-db: 1
