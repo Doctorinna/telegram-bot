@@ -1,5 +1,7 @@
 # Doctorinna-Telegram bot
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5e91d2c1d64f41cd9bbfeedb7af7f81c?branch=dev)](https://www.codacy.com/gh/Doctorinna/telegram-bot/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Doctorinna/telegram-bot&amp;utm_campaign=Badge_Grade)
+
 This repository is place for Doctorinna Telegram bot - part of the [Doctorinna](https://github.com/Doctorinna) project. 
 The bot is built using the [aiogram](https://github.com/aiogram/aiogram) framework.
 
