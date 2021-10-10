@@ -9,6 +9,7 @@ services:
       DOCTORINNA_BOT_TOKEN: ${DOCTORINNA_BOT_TOKEN}
       DOCTORINNA_BOT_ADMIN: ${DOCTORINNA_BOT_ADMIN}
       DOCTORINNA_API_URL: ${DOCTORINNA_API_URL}
+      DOCTORINNA_REDIS_IP: doctorinna-redis-server
 
     depends_on:
       - redis-server
@@ -17,8 +18,11 @@ services:
     container_name: doctorinna-redis-server
     image: redis
 
+    ports:
+    - 6379:6379
+
     volumes:
-      - redis-data:/var/lib/redis
+      - redis-data:/data
 
 volumes:
   redis-data:
