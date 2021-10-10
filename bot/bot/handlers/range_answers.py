@@ -5,7 +5,7 @@ from .base import update_user_context, send_question, send_category_title
 from .finish_questionnaire import finish_questionnaire
 from ..keyboards import QuestionKeyboardMarkupFactory
 from ..states import QuestionnaireStates
-from ...api import Question, Questionnaire
+from ...api import Question, Questionnaire, QuestionnaireAPI
 
 
 async def range_answer_handler(
@@ -13,12 +13,13 @@ async def range_answer_handler(
         state: FSMContext,
         questionnaire: Questionnaire,
         keyboard_markup_factory: QuestionKeyboardMarkupFactory,
+        questionnaire_api: QuestionnaireAPI,
         curr_category_index: int,
         curr_question_index: int,
         curr_question: Question
 ):
-    # validate input
     answer = message.text
+    # validate input
     try:
         answer = int(answer)
     except ValueError:
@@ -38,7 +39,7 @@ async def range_answer_handler(
     next_indices = questionnaire.get_next_indices(curr_category_index,
                                                   curr_question_index)
     if next_indices is None:
-        await finish_questionnaire(message, state)
+        await finish_questionnaire(message, state, questionnaire_api)
         await state.reset_state()
         await state.reset_data()
         return

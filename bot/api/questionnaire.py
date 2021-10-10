@@ -1,8 +1,9 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 from aiohttp import ClientSession
 
 from .questions import QuestionsCategory, parse_questions_category
+from .requester import Requester
 
 
 class Questionnaire:
@@ -33,6 +34,7 @@ class QuestionnaireAPI:
     def __init__(self, api_url: str):
         self._API_URL: str = api_url
         self._session = ClientSession()
+        self._requester = Requester(self._session)
         self._questionnaire: Optional[Questionnaire] = None
 
     @property
@@ -54,7 +56,7 @@ class QuestionnaireAPI:
     async def _retrieve_categories_info(self) \
             -> list[dict[str, Union[int, str]]]:
         uri = '/risks/categories'
-        response = await self._session.get(self._API_URL + uri)
+        response = await self._requester.request('GET', self._API_URL + uri)
         categories_info = await response.json()
         return categories_info
 
@@ -63,12 +65,28 @@ class QuestionnaireAPI:
             category_id: int,
             category_name: str) -> QuestionsCategory:
         uri = f'/risks/questions/{category_name}'
-        response = await self._session.get(self._API_URL + uri)
+        response = await self._requester.request('GET', self._API_URL + uri)
         raw_questions = await response.json()
         questions_category = parse_questions_category(category_id,
                                                       category_name,
                                                       raw_questions)
         return questions_category
+
+    async def get_results(self, session: ClientSession,
+                          answers: list[dict[str, Union[str, Any]]]) -> dict:
+        requester = Requester(session)
+        send_answers_uri = '/risks/response/'
+        await requester.request(
+            method='POST',
+            url=self._API_URL + send_answers_uri,
+            json=answers
+        )
+
+        get_results_uri = '/risks/result/'
+        response = await requester.request(method='GET',
+                                           url=self._API_URL + get_results_uri)
+        result = await response.json()
+        return result
 
     async def close(self):
         await self._session.close()

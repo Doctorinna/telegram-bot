@@ -15,6 +15,7 @@ class DataMiddleware(BaseMiddleware):
     def _pass_parameters(self, data: dict):
         data['questionnaire'] = self._questionnaire_api.questionnaire
         data['keyboard_markup_factory'] = self._keyboard_markup_factory
+        data['questionnaire_api'] = self._questionnaire_api
 
     async def _pass_user_context(self, data: dict):
         user_data = await data['state'].get_data()
