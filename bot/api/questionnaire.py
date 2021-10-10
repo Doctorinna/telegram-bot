@@ -13,14 +13,26 @@ class Questionnaire:
     def size(self) -> int:
         return len(self._categories)
 
-    def get_category(self, category_index) -> QuestionsCategory:
+    def get_category(self, category_index: int) -> QuestionsCategory:
         return self._categories[category_index]
+
+    def get_next_indices(self, category_index: int, question_index: int) -> \
+            Optional[tuple[int, int]]:
+        # case: the very last question
+        if question_index == self.get_category(category_index).size - 1 and \
+                category_index == self.size - 1:
+            return None
+        # case: last question in the category
+        elif question_index == self.get_category(category_index).size - 1:
+            return category_index + 1, 0
+
+        return category_index, question_index + 1
 
 
 class QuestionnaireAPI:
-    def __init__(self, api_url: str, session: ClientSession):
+    def __init__(self, api_url: str):
         self._API_URL: str = api_url
-        self._session = session
+        self._session = ClientSession()
         self._questionnaire: Optional[Questionnaire] = None
 
     @property
@@ -39,7 +51,8 @@ class QuestionnaireAPI:
         questionnaire = Questionnaire(questions_categories)
         self._questionnaire = questionnaire
 
-    async def _retrieve_categories_info(self) -> list[dict[str, Union[int, str]]]:
+    async def _retrieve_categories_info(self) \
+            -> list[dict[str, Union[int, str]]]:
         uri = '/risks/categories'
         response = await self._session.get(self._API_URL + uri)
         categories_info = await response.json()
@@ -57,3 +70,5 @@ class QuestionnaireAPI:
                                                       raw_questions)
         return questions_category
 
+    async def close(self):
+        await self._session.close()
