@@ -90,7 +90,7 @@ jobs:
             -e DOCTORINNA_BOT_TOKEN=${{ secrets.DOCTORINNA_BOT_TOKEN_STAGE }} \
             -e DOCTORINNA_BOT_ADMIN=${{ secrets.DOCTORINNA_BOT_ADMIN }} \
             -e DOCTORINNA_API_URL=${{ secrets.DOCTORINNA_API_URL }} \
-            -e DOCTORINNA_REDIS_IP=redis-server \
+            -e DOCTORINNA_REDIS_IP=doctorinna-redis-server \
             -d \
             --restart always \
             --name ${{ env.CONTAINER_NAME }} \
