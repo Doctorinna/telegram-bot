@@ -4,8 +4,7 @@
   <p></p>
 </div>
 
-
-> This is the part of the Doctorinna project, check out the [overview repository](https://github.com/Doctorinna/overview) first
+> This is the part of the Doctorinna project, check out the [overview repository](https://github.com/Doctorinna/overview)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5e91d2c1d64f41cd9bbfeedb7af7f81c)](https://www.codacy.com/gh/Doctorinna/telegram-bot/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Doctorinna/telegram-bot&amp;utm_campaign=Badge_Grade)
 
@@ -19,7 +18,7 @@
 - [Deployment](#deploy)
 
 
-## 📎 About application <a name="getting-started"></a>
+## 📎 About application <a name="about"></a>
 This repository is place for **Doctorinna** Telegram bot - part of the Doctorinna project.
 This is an open-source project to determine user's risk groups for several diseases.
 It is achieved via questionnaire, people answer a set of questions and get a result on diseases with a piece of advice.
@@ -37,6 +36,8 @@ Please feel free to try: [@doctorinna_bot](https://t.me/doctorinna_bot)
 First and foremost, the bot is written in **Python** programming language.
 It utilizes the fhe [aiogram](https://github.com/aiogram/aiogram) framework and 
 uses [Redis](https://redis.io/) as a storage.
+
+## Run bot <a name="run"></a>
 
 ### Run locally without Docker <a name="without-docker"></a>
 
@@ -81,5 +82,6 @@ DOCTORINNA_BOT_ADMIN=123456789 DOCTORINNA_API_URL=https://doctorinna.com/api
 docker-compose up
 ```
 
-## Deployment <a name="deployment"></a>
+## Deployment <a name="deploy"></a>
 [Digitalocean](https://www.digitalocean.com/) was used to deploy bot to the server
+
