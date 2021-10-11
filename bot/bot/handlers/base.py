@@ -35,6 +35,6 @@ async def send_question(message: types.Message,
 async def send_category_title(message: types.Message, category_index: int,
                               category: QuestionsCategory):
     await message.answer(
-        f'<b>{roman.toRoman(category_index + 1)}. '
-        f'{category.title.capitalize()}</b>'
+        f'<u><b>{roman.toRoman(category_index + 1)}. '
+        f'{category.title.capitalize()}</b></u>'
     )

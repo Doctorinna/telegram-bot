@@ -1,3 +1,5 @@
+import asyncio
+from datetime import datetime
 from typing import Optional, Union, Any
 
 from aiohttp import ClientSession
@@ -31,27 +33,41 @@ class Questionnaire:
 
 
 class QuestionnaireAPI:
-    def __init__(self, api_url: str):
+    def __init__(self, api_url: str, session: ClientSession,
+                 update_frequency: int = 60):
         self._API_URL: str = api_url
-        self._session = ClientSession()
+        self._session = session
         self._requester = Requester(self._session)
         self._questionnaire: Optional[Questionnaire] = None
+        self._last_updated: Optional[datetime] = None
+        self._update_frequency = update_frequency
+        self._lock = asyncio.Lock()
 
     @property
     def questionnaire(self):
         return self._questionnaire
 
+    @property
+    def last_updated(self):
+        return self._last_updated
+
+    @property
+    def update_frequency(self):
+        return self._update_frequency
+
     async def retrieve_questionnaire(self):
-        categories_info = await self._retrieve_categories_info()
-        questions_categories = []
-        for category_info in categories_info:
-            questions_category = await self._retrieve_questions_category(
-                category_id=category_info['id'],
-                category_name=category_info['title']
-            )
-            questions_categories.append(questions_category)
-        questionnaire = Questionnaire(questions_categories)
-        self._questionnaire = questionnaire
+        async with self._lock:
+            categories_info = await self._retrieve_categories_info()
+            questions_categories = []
+            for category_info in categories_info:
+                questions_category = await self._retrieve_questions_category(
+                    category_id=category_info['id'],
+                    category_name=category_info['title']
+                )
+                questions_categories.append(questions_category)
+            questionnaire = Questionnaire(questions_categories)
+            self._questionnaire = questionnaire
+            self._last_updated = datetime.utcnow()
 
     async def _retrieve_categories_info(self) \
             -> list[dict[str, Union[int, str]]]:
@@ -88,5 +104,13 @@ class QuestionnaireAPI:
         result = await response.json()
         return result
 
-    async def close(self):
-        await self._session.close()
+    async def get_illness_statistics(self, session: ClientSession,
+                                     illness_name: str) -> dict:
+        requester = Requester(session)
+        get_statistics_uri = f'/risks/result/statistics/{illness_name}'
+        response = await requester.request(
+            method='GET',
+            url=self._API_URL + get_statistics_uri
+        )
+        statistics = await response.json()
+        return statistics

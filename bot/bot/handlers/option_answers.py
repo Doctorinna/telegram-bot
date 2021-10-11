@@ -24,8 +24,10 @@ async def option_answer_handler(
 
     await callback_query.answer()
     await callback_query.message.edit_reply_markup()
-    await callback_query.message.edit_text(f'{callback_query.message.text}\n'
-                                           f'{chosen_option_answer.text}')
+    await callback_query.message.edit_text(
+        f'{callback_query.message.text}\n'
+        f'<i>{chosen_option_answer.text}</i>'
+    )
 
     # save user's answer to the storage
     await state.update_data({curr_question.id: chosen_option_answer.text})

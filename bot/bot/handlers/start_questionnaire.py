@@ -8,10 +8,11 @@ from ..keyboards import QuestionKeyboardMarkupFactory
 from ...api import Questionnaire
 
 
-GREETINGS_MESSAGE = "Hello! We are glad to see you in our Doctorinna " \
-    "Telegram bot. You will be given a set of simple questions in {} " \
+GREETINGS_MESSAGE = "Hello! 👋 We are glad to see you in our " \
+    "<b>Doctorinna</b> Telegram bot. You will be given a set questions in {} "\
     "categories. Most of the questions require choosing one variant from " \
-    "the given ones via inline buttons, and some require typing in the number."
+    "the given ones via inline buttons 📋, " \
+    "and some require typing in the number 📝."
 
 
 async def start_questionnaire_handler(
