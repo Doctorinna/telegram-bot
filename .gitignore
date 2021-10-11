@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 .idea/
+
+config.yml
+bot.log

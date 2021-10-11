@@ -1,0 +1,98 @@
+name: CI-CD-dev
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+env:
+  REGISTRY: "maximpr"
+  IMAGE_NAME: "doctorinna-tg-stage"
+  CONTAINER_NAME: "doctorinna-telegram-bot"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+         
+      - name: Lint with flake8
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8
+          flake8 --per-file-ignores="__init__.py:F401" --count --statistics --show-source bot
+          
+      - name: Start Docker containers
+        env:
+          DOCTORINNA_BOT_TOKEN: ${{ secrets.DOCTORINNA_BOT_TOKEN_TEST }}
+          DOCTORINNA_BOT_ADMIN: ${{ secrets.DOCTORINNA_BOT_ADMIN }}
+          DOCTORINNA_API_URL: ${{ secrets.DOCTORINNA_API_URL }}
+        run: |
+          docker-compose up -d
+          docker logs doctorinna-telegram-bot
+          docker logs doctorinna-redis-server
+          docker ps
+        
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: test
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v2
+
+      - name: Build container image
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Push image to DockerhHub respository
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: build-and-push
+
+    steps:
+      - name: Deploy to Digital Ocean droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DIGITALOCEAN_HOST_STAGE }}
+          username: ${{ secrets.DIGITALOCEAN_USERNAME_STAGE }}
+          key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+          passphrase: ${{ secrets.DIGITALOCEAN_SSH_PASSPHRASE }}
+          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME
+          script: |
+            # Stop running container
+            docker ps | grep ${{ env.CONTAINER_NAME }} && docker stop ${{ env.CONTAINER_NAME }}
+            # Remove old container
+            docker ps -a | grep ${{ env.CONTAINER_NAME }} && docker rm ${{ env.CONTAINER_NAME }}
+            # Run a new container from a new image
+            docker run \
+            -e DOCTORINNA_BOT_TOKEN=${{ secrets.DOCTORINNA_BOT_TOKEN_STAGE }} \
+            -e DOCTORINNA_BOT_ADMIN=${{ secrets.DOCTORINNA_BOT_ADMIN }} \
+            -e DOCTORINNA_API_URL=${{ secrets.DOCTORINNA_API_URL }} \
+            -e DOCTORINNA_REDIS_IP=doctorinna-redis-server \
+            -d \
+            --restart always \
+            --name ${{ env.CONTAINER_NAME }} \
+            --link doctorinna-redis-server:doctorinna-redis-server \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
