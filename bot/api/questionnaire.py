@@ -97,6 +97,7 @@ class QuestionnaireAPI:
             url=self._API_URL + send_answers_uri,
             json=answers
         )
+        await asyncio.sleep(1)
 
         get_results_uri = '/risks/result/'
         response = await requester.request(method='GET',
